@@ -1,0 +1,15 @@
+# Gradle / Android Studio
+.gradle/
+build/
+/local.properties
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Never commit signing material or CI output
+*.jks
+*.keystore
+keystore.properties
+dist/

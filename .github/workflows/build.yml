@@ -1,0 +1,166 @@
+name: Build APKs
+
+# Runs the JVM unit tests, then builds 5 debug + 5 release APKs (one per ABI + universal) as 10 separate artifacts.
+# A failing unit test stops the run before any APK is published.
+# Release APKs are built ONLY when all four signing secrets exist; otherwise only the
+# 5 debug APKs are published. Unsigned release APKs are never published.
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GRADLE_VERSION: "9.4.1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle (with caching)
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
+
+      - name: Accept Android SDK licenses
+        run: |
+          set +o pipefail
+          yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+
+      - name: Detect signing secrets
+        id: signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ] && [ -n "$ANDROID_KEYSTORE_PASSWORD" ] \
+             && [ -n "$ANDROID_KEY_ALIAS" ] && [ -n "$ANDROID_KEY_PASSWORD" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Signing secrets are missing: building and publishing debug APKs only."
+          fi
+
+      - name: Run unit tests
+        run: gradle :app:testDebugUnitTest --stacktrace
+
+      - name: Build debug APKs
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Decode release keystore
+        if: steps.signing.outputs.available == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+
+      - name: Build release APKs
+        if: steps.signing.outputs.available == 'true'
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle :app:assembleRelease --stacktrace
+
+      - name: Collect and verify APKs
+        run: |
+          if [ "${{ steps.signing.outputs.available }}" = "true" ]; then
+            bash .github/scripts/collect-and-verify-apks.sh debug release
+          else
+            bash .github/scripts/collect-and-verify-apks.sh debug
+          fi
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.keystore"
+
+      # ---- 5 debug artifacts -------------------------------------------------
+      - name: Upload fOCUS-debug-arm64-v8a
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-debug-arm64-v8a
+          path: dist/fOCUS-debug-arm64-v8a.apk
+          if-no-files-found: error
+      - name: Upload fOCUS-debug-armeabi-v7a
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-debug-armeabi-v7a
+          path: dist/fOCUS-debug-armeabi-v7a.apk
+          if-no-files-found: error
+      - name: Upload fOCUS-debug-x86
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-debug-x86
+          path: dist/fOCUS-debug-x86.apk
+          if-no-files-found: error
+      - name: Upload fOCUS-debug-x86_64
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-debug-x86_64
+          path: dist/fOCUS-debug-x86_64.apk
+          if-no-files-found: error
+      - name: Upload fOCUS-debug-universal
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-debug-universal
+          path: dist/fOCUS-debug-universal.apk
+          if-no-files-found: error
+
+      # ---- 5 release artifacts (only when signing secrets exist) --------------
+      - name: Upload fOCUS-release-arm64-v8a
+        if: steps.signing.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-release-arm64-v8a
+          path: dist/fOCUS-release-arm64-v8a.apk
+          if-no-files-found: error
+      - name: Upload fOCUS-release-armeabi-v7a
+        if: steps.signing.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-release-armeabi-v7a
+          path: dist/fOCUS-release-armeabi-v7a.apk
+          if-no-files-found: error
+      - name: Upload fOCUS-release-x86
+        if: steps.signing.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-release-x86
+          path: dist/fOCUS-release-x86.apk
+          if-no-files-found: error
+      - name: Upload fOCUS-release-x86_64
+        if: steps.signing.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-release-x86_64
+          path: dist/fOCUS-release-x86_64.apk
+          if-no-files-found: error
+      - name: Upload fOCUS-release-universal
+        if: steps.signing.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fOCUS-release-universal
+          path: dist/fOCUS-release-universal.apk
+          if-no-files-found: error

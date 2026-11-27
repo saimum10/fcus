@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors FocusPalette.Light.Background -->
+    <color name="window_background">#F5F6F0</color>
+    <!-- Launcher icon background mirrors FocusPalette.Dark.Background -->
+    <color name="ic_launcher_background">#111311</color>
+</resources>

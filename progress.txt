@@ -1,0 +1,43 @@
+fOCUS progress (kept current; see prompt.txt for the phase list)
+
+Phase 01 Foundation ............... written
+Phase 02 UI system, core screens .. written, approved
+Phase 03 App discovery ............ written, approved
+Phase 04 Session engine, timer .... written, approved
+Phase 05 Restriction engine ....... written, approved
+Phase 06 Emergency, recovery ...... written, approved
+Phase 07 Statistics, optimization . written, approved
+Phase 08 Finalization, release .... IN PROGRESS: static review done, build/tests/CI NOT run
+
+Phase 08 done (by reading and scripts only, no build tools available):
+- every dependency in libs.versions.toml is used; test code uses JUnit + coroutines core + DataStore only
+- AGP 9.2.1 / Gradle 9.4.1 / Kotlin 2.3.10 pairing confirmed from the AGP release notes; WorkManager 2.12.0 exists (minSdk 24)
+- all 293 used string resources exist; 1 unused string removed (result_planned)
+- package names match folders; all com.focus.app imports resolve; manifest classes exist
+- no TODO/stub/logging in main code; AndroidDeviceControl no longer uses !!
+- CI had no unit-test step: added `gradle :app:testDebugUnitTest` before the APK build
+- deeper read of SessionEngine, RestrictionCoordinator, AndroidDeviceControl, Room schema/migration, resources: no logic or lock-order problem found
+- README, manifest comment and phase table updated; RELEASE_NOTES.md drafted
+
+Phase 08 open (needs a machine that can build and a GitHub repo):
+1. gradlew / gradlew.bat / gradle-wrapper.jar missing (run: gradle wrapper --gradle-version 9.4.1)
+2. gradle :app:testDebugUnitTest :app:assembleDebug  (first compile ever: errors possible)
+3. first GitHub Actions run, fix failures; release APKs need the 4 signing secrets
+4. ABI split APKs need a dependency with native code (expected libandroidx.graphics.path.so); the verify script will say if not
+5. check each APK: ABI, package, versionName 0.1.0 / versionCode 1, signature, install, merged permissions
+6. device run (checklist in README, Phase 7 section); release (R8) build smoke test
+
+First CI run (user): unit-test step failed at :app:checkDebugAarMetadata, Compose 1.13 needs compileSdk 37.1 (we had 37; log showed 1 of 4 issues).
+Fix applied: compileSdk = release(37){minorApiLevel=1}, android.suppressUnsupportedCompileSdk=37.1. AGP 9.2 officially supports up to 37.0, so a warning/other 37.1 problems are possible. Re-run CI.
+
+Second CI run: compileSdk fix worked (checkDebugAarMetadata passes). First real compile error: TelephonyManager.ACTION_EMERGENCY_ASSISTANCE is not in the public SDK (PackageInstalledAppsSource.kt:78, EmergencyScreen.kt:46-47; 'resolveActivity' error was a follow-on).
+Fix: new domain/SystemActions.EMERGENCY_ASSISTANCE = "android.telephony.action.EMERGENCY_ASSISTANCE" (same string as in the manifest <queries>). Re-run CI; unit-test sources are compiled next and may show more errors.
+
+Shizuku support (after first device test): the installed APK could not block apps on a regular phone ("Not available").
+Added DeploymentLevel.Shizuku, ShizukuState, device/ShizukuShell.kt (pm suspend/unsuspend through Shizuku, reflection on Shizuku.newProcess), guide screen section, strings, manifest provider, Shizuku app protected, tests (ModeSupport, Planner, ProtectionPolicy, Coordinator). NOT built or run: expect possible compile errors on the next CI run. Check on the device: Shizuku permission dialog, suspend/unsuspend, behaviour when Shizuku is stopped mid-session.
+
+Uninstall protection (after second device test: fOCUS could be uninstalled during a session): DeviceControl.setUninstallBlocked, journal flag uninstallBlocked, RestrictionStatus.uninstallBlocked + note on the active screen; Shizuku uses pm set-user-restriction no_uninstall_apps/no_control_apps, Device Owner uses setUninstallBlocked. Tests added (coordinator, journal). NOT run. Unverified: whether the shell may set these restrictions on the user's phone; dumpsys user output format.
+
+Stop-then-block: DeviceControl.forceStop (Shizuku: am force-stop --user 0) runs before suspend for exactly the apps being blocked; protected apps (fOCUS, Shizuku, home, phone, emergency, settings) never stopped. Tests added (order, sets). NOT run.
+
+Shizuku loss no longer ends a session (Applied.viaShizuku, status.shizukuStopped, note on active screen); cleanup of a dirty journal also runs on device changes when no session is active. Tests updated/added. NOT run.

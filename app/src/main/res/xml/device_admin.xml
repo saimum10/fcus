@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No device-admin policies are requested. The receiver only exists so Android can make
+     fOCUS the Device Owner during provisioning (see the in-app guide). -->
+<device-admin>
+    <uses-policies />
+</device-admin>

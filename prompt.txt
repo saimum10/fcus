@@ -1,0 +1,76 @@
+﻿# fOCUS — Android Focus & Device Restriction App
+
+Package: com.focus.app | Kotlin, Jetpack Compose (Material 3), MVVM + clean layers (ui / domain / data / device / session / recovery).
+
+# GLOBAL RULES (apply to EVERY phase — re-read before starting each phase)
+
+## Workflow
+1. Session start: read prompt.txt, continue from the first incomplete phase. Don't redo or overwrite working code.
+2. Before each phase: study how established open-source apps solve that phase's problem (search GitHub/F-Droid: app blockers, parental control, kiosk/Device Owner apps, e.g. TimeLimit, Test DPC). Learn their mechanisms, APIs, permissions and limits.
+3. Read files before editing them. Don't assume APIs, files or dependencies. Use stable, mutually compatible Gradle/AGP/Kotlin/Compose versions; no major upgrades later without a real need.
+4. Phase end (Phases 01–07): give a short summary (files changed, what is implemented, what is still untested), then STOP and wait for my approval. Do NOT run GitHub Actions or build/publish APKs in these phases. All building, test runs, CI runs and device testing happen once, in Phase 08. Any "test" item inside a phase means: write the test code now, run it in Phase 08.
+5. Never claim unverified work. No fake/placeholder implementations or critical TODOs. If a restriction can't be enforced, show it as "unsupported" and implement the safest alternative.
+
+## Safety & platform limits
+- Never block emergency calling/info or system recovery. No hidden, deceptive, irreversible or bricking behavior. Never leave the device permanently inaccessible.
+- Two deployment modes, separated behind capability interfaces:
+  a) Regular device: normal-app APIs only; state limitations clearly.
+  b) Device Owner / managed device (lock mode C): only when properly provisioned (initial setup/factory reset). Document it. No privilege escalation. Use DevicePolicyManager / Lock Task only when available.
+- A normal app can't stop force-stop, uninstall, reboot, safe mode; call handling varies by OS/OEM. State this; never promise an unbreakable lock.
+- UsageStatsManager alone can't block apps. No fragile overlays as enforcement. Detect and show the capability level.
+- AccessibilityService only if unavoidable: opt-in, narrow, policy-compliant.
+- Minimum permissions, each explained in-app. Local processing/storage only. No unnecessary personal data. No secrets in logs/notifications.
+- Never restrict fOCUS itself, essential system apps/UI, or emergency functions.
+
+## Product config
+- Duration: presets 15m, 30m, 45m, 1h, 2h, 3h, 6h, 12h, 24h + custom. Validate limits; show exact end time before start.
+- Modes (only as far as the deployment mode really supports): Selected Apps, Full Focus, Call Only, Scheduled Focus.
+- Recovery (C): emergency access + trusted-person recovery. No ordinary early-unlock button. Trusted person is explicitly configured, visible, documented; nobody contacted secretly. Explain what recovery can/can't override. Rate-limit abuse without blocking real emergencies. Local audit log, minimal data.
+
+## Design
+Calm, lightweight, hand-crafted native UI, dark + light. Avoid: excess cards, gradients, neon, heavy shadows, decorative art/icons, clutter, extra confirmation screens, fake data/stats. Accessible contrast, scalable text, system insets, responsive.
+Dark: bg #111311, surface #1B1E1B, primary #C7E88B, text #F2F3EC, secondary #969C91.
+Light: bg #F5F6F0, surface #FFFFFF, primary #536D36, text #20241E, secondary #747B70.
+
+## Quality
+- Minimal, justified dependencies. Stack: Room, DataStore, Coroutines/Flow, WorkManager.
+- Real local data only; empty states for new users.
+- Meaningful error handling; no hardcoded secrets.
+- Unit tests: session state, duration math, recovery decisions, app-selection persistence. UI tests where practical.
+- Keep README current.
+
+## CI — exactly 10 APKs (write the workflow in Phase 01, keep it current in any phase that touches build, run it only in Phase 08)
+GitHub Actions builds 5 debug + 5 release, one per ABI, as 10 separate named artifacts:
+fOCUS-{debug|release}-{arm64-v8a|armeabi-v7a|x86|x86_64|universal}.apk
+- Real ABI splits; each APK contains only its ABI., no renamed copies. Verify contents (apkanalyzer/aapt), not filenames.
+- Debug: installable, no secrets needed. Release: signed via secrets ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD. Missing secrets → publish only debug apk ; never publish unsigned as signed. Never commit or upload keystores/secrets.
+- Final step verifies exactly 5 debug + 5 release APKs exist (only the 5 debug if signing secrets are missing), non-zero size, correct ABI.
+- Triggers: push, PR, manual dispatch, version tags. Gradle caching on. Compatible JDK/Gradle.
+- Document secrets setup and artifact download in README.
+- Don't claim APKs were built unless workflow output proves it; if no real run is possible, say so and list the validation done.
+
+# PHASES (phase-specific tasks only; global rules above still apply)
+
+## Phase 01 — Foundation
+Create the Android project from scratch: Gradle (Kotlin DSL, version catalog, wrapper), app module, package com.focus.app, app name fOCUS, Kotlin + Jetpack Compose (Material 3), light/dark themes, navigation base, layered package structure (ui / domain / data / device / session / recovery), ABI split config. Create README. Baseline CI workflow for the 10 APKs (written only, not run until Phase 08). Basic app skeleton that is ready to build. No fake restriction behavior.
+
+## Phase 02 — UI System & Core Screens
+Design tokens, typography, components, navigation. Screens: onboarding (incl. limitations), permission/managed-device guide, dashboard, mode selection, app-selection shell, duration/schedule config, session confirmation, active session, settings/privacy/about. Real state only.
+
+## Phase 03 — App Discovery
+List launchable apps with proper package visibility; label + icon; search; select/deselect; persist. Handle install/remove/update. Protect essential apps and explain which can't be restricted. Test on device/emulator.
+
+## Phase 04 — Session Engine & Timer
+State machine: Idle, Configuring, Starting, Active, RecoveryPending, Completed, Interrupted, Failed. Presets/custom/schedules. Persist state + end timestamp; recover after process death/restart. Handle reboot, time-zone/clock changes. Block duplicate sessions and conflicting schedules. Clear states for permission loss/policy failure/unsupported device. Never show a restriction as active if its API failed. Session history with interruption reasons. Unit tests.
+
+## Phase 05 — Restriction Engine
+Regular-device capabilities (honest). Optional Device Owner adapter + Lock Task where provisioned. Capability detection and setup instructions. Implement the 4 modes only as far as truly supported. Test; document OEM/Android-version limits.
+
+## Phase 06 — Emergency & Trusted Recovery
+Obvious emergency entry. Trusted-person setup + flow, explained before activation. Handle crash, restart, permission loss; safe way to end a session. Audit records. Test all recovery paths; nothing hidden.
+
+## Phase 07 — Statistics, Optimization, Testing
+Real stats: total focus time, completed/interrupted, daily/weekly, most-restricted apps (only if low data collection). Optimize DB, battery, lifecycle. Test screen sizes, Android versions, accessibility, error cases. Fix crashes, leaks, regressions.
+
+## Phase 08 — Finalization & Release
+Review whole codebase; remove unused dependencies. Verify permissions, privacy, docs, known limits. This is the only phase where everything is built and tested: run unit/UI tests and a clean build, run the CI workflow on GitHub (first real run) and fix any failures. Verify each APK's ABI, package ID, version, signing, installability. Deliver release notes, changed-file summary, test results, artifact names, known issues.

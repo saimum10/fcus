@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">fOCUS</string>
+
+    <!-- Common actions -->
+    <string name="action_back">Back</string>
+    <string name="action_next">Next</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_retry">Try again</string>
+
+    <!-- Home -->
+    <string name="home_status_idle">No session is running.</string>
+    <string name="home_idle_note">Nothing is restricted right now.</string>
+    <string name="home_loading">Loading…</string>
+    <string name="home_status_starting">Starting a session…</string>
+    <string name="home_status_recovery">Recovery requested</string>
+    <string name="home_recovery_note">Restrictions stay in place until the recovery is completed.</string>
+    <string name="home_status_completed">Session completed</string>
+    <string name="home_status_interrupted">Session ended early</string>
+    <string name="home_status_failed">Session did not run</string>
+    <string name="home_dismiss">Dismiss</string>
+    <string name="result_mode">Mode</string>
+    <string name="result_active">Time restricted</string>
+    <string name="result_reason">Reason</string>
+    <string name="home_status_active">Session running</string>
+    <string name="home_new_session">New session</string>
+    <string name="home_view_session">View session</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_progress">Step %1$d of %2$d</string>
+    <string name="onboarding_done">Get started</string>
+    <string name="onboarding_1_title">A calm way to focus</string>
+    <string name="onboarding_1_body">fOCUS helps you set time aside with fewer distractions. You choose a mode, which apps it covers and how long it lasts, and fOCUS shows the exact end time before anything starts.\n\nEverything runs on your device.</string>
+    <string name="onboarding_2_title">What fOCUS cannot do</string>
+    <string name="onboarding_2_body">Unless your device is set up as a managed device, fOCUS is a normal app. A normal app cannot stop you from force-stopping it, uninstalling it, restarting the phone or entering safe mode, and how calls are handled differs between Android versions and manufacturers.\n\nWhatever your device cannot enforce is shown as unsupported, never as active. fOCUS never blocks emergency calls or emergency information, system recovery, itself or essential system apps.\n\nIt is a commitment tool, not an unbreakable lock.</string>
+    <string name="onboarding_3_title">Your data stays here</string>
+    <string name="onboarding_3_body">fOCUS has no account and no internet access. Its settings are stored only on this device, and so is anything it stores later, such as session history.\n\nIt shows no permission prompts right now. Android may list a few automatic install-time permissions that let its timer survive a restart. If a feature needs a real permission later, fOCUS explains why when it asks, and the feature stays off if you decline.</string>
+
+    <!-- Permission and managed-device guide -->
+    <string name="guide_title">Permissions and managed device</string>
+    <string name="guide_permissions_heading">Permissions</string>
+    <string name="guide_permissions_body">fOCUS shows no permission prompts. The one special access it can use is Do Not Disturb access, to silence notifications during a session; you grant it in Android settings and fOCUS never grants it to itself. For its session timer to survive a restart, the background-work library it uses adds a few automatic install-time permissions (such as running after a restart). They are not requested at runtime.\n\nTo show your apps it declares which kinds of apps it may see: apps with a launcher icon, and the home, phone, emergency and settings apps so it can protect them. It does not hold Android’s broad permission to see every installed app.\n\nIf a later feature needs another, fOCUS explains what it is for and what happens if you decline, at the moment it asks. You can withdraw any permission in Android settings.</string>
+    <string name="guide_managed_heading">Managed device (Device Owner)</string>
+    <string name="guide_managed_body">Some restrictions can only be enforced on a managed device, where fOCUS is set as the Device Owner. Android typically allows this only during initial device setup, which in practice means after a factory reset that erases the device. fOCUS cannot promote itself, and there is no workaround.\n\nOnly consider this on a device you own and are prepared to reset. fOCUS is designed never to remove emergency calling or system recovery, even on a managed device.</string>
+    <string name="guide_status_heading">This device</string>
+    <string name="guide_level_label">Management level</string>
+    <string name="guide_level_regular">Regular device</string>
+    <string name="guide_level_owner">Device Owner</string>
+    <string name="guide_cap_apps">Block apps</string>
+    <string name="guide_cap_lock_task">Lock Task</string>
+    <string name="guide_cap_notifications">Silence notifications</string>
+    <string name="guide_level_shizuku">Regular device with Shizuku</string>
+    <string name="guide_cap_shizuku">Shizuku</string>
+    <string name="guide_shizuku_not_running">Not running</string>
+    <string name="guide_shizuku_needs_permission">Needs your permission</string>
+    <string name="guide_shizuku_allowed">Allowed</string>
+    <string name="guide_shizuku_heading">Block apps with Shizuku</string>
+    <string name="guide_shizuku_body">Shizuku lets fOCUS block apps without a factory reset: it runs the system command that pauses an app, with the same rights as a computer connected by USB debugging. Install Shizuku, start it (on Android 11 or newer, through Wireless debugging in Developer options), then allow fOCUS.\n\nShizuku stops when the phone restarts, so start it again before a session. If Shizuku stops during a session, the session keeps running and blocked apps stay blocked; start Shizuku again so fOCUS can check them. If the time runs out while Shizuku is stopped, apps stay blocked until Shizuku runs again. The Shizuku app, settings, phone, emergency and home apps are never blocked, so you can always start Shizuku again.</string>
+    <string name="guide_shizuku_note_not_running">Shizuku is not running. Install it if you have not, open it, start it, then come back here.</string>
+    <string name="guide_shizuku_note_permission">If no dialog appears, open Shizuku, go to authorized apps and allow fOCUS there.</string>
+    <string name="guide_shizuku_action">Allow Shizuku access</string>
+    <string name="guide_shizuku_open_action">Open Shizuku</string>
+    <string name="guide_shizuku_note">fOCUS blocks apps through Shizuku. Selected apps, Full focus, Call only and Scheduled focus pause apps: they cannot be opened and send no notifications until the session ends. Lock Task is not available this way. fOCUS itself, the home screen, phone, emergency, settings and Shizuku apps are never paused.</string>
+    <string name="guide_value_yes">Available</string>
+    <string name="guide_value_no">Not available</string>
+    <string name="guide_value_needs_access">Needs your permission</string>
+    <string name="guide_value_allowed">Allowed</string>
+    <string name="guide_regular_note">This is a regular device. Android does not let a normal app block other apps, so Selected apps, Full focus and Scheduled focus are unsupported here. Call only works in a limited form: it silences notifications except calls, and apps can still be opened.</string>
+    <string name="guide_owner_note">fOCUS is the Device Owner of this device. Selected apps, Full focus, Call only and Scheduled focus suspend apps: they cannot be opened and send no notifications until the session ends. fOCUS itself, the home screen, phone, emergency and settings apps are never suspended.</string>
+    <string name="guide_notification_action">Open notification access</string>
+    <string name="guide_notification_note">Call only on a regular device needs Do Not Disturb access, which only you can grant in Android settings. fOCUS puts your previous Do Not Disturb settings back when the session ends.</string>
+    <string name="guide_setup_heading">Set up Device Owner</string>
+    <string name="guide_setup_body">Android only allows this on a device with no accounts, typically right after a factory reset and before setup is finished. With USB debugging enabled and fOCUS installed, run on a computer:\n\nadb shell dpm set-device-owner com.focus.app/.device.FocusDeviceAdminReceiver\n\nIf Android refuses, the device is not eligible and fOCUS stays a regular app. Behavior can differ between Android versions and manufacturers; fOCUS only reports what the device confirms.</string>
+    <string name="guide_release_heading">Stop managing this device</string>
+    <string name="guide_release_body">This removes all of fOCUS’s restrictions and gives up Device Owner status, so the device is no longer managed. You can do it whenever no session is running.</string>
+    <string name="guide_release_action">Stop managing</string>
+    <string name="guide_release_blocked">Not available while a session is running.</string>
+    <string name="guide_release_failed">fOCUS could not give up Device Owner status. Nothing was changed.</string>
+
+    <!-- Modes -->
+    <string name="mode_title">Choose a mode</string>
+    <string name="mode_selected_apps">Selected apps</string>
+    <string name="mode_selected_apps_desc">Restrict only the apps you choose.</string>
+    <string name="mode_full_focus">Full focus</string>
+    <string name="mode_full_focus_desc">Restrict everything except fOCUS, calls and emergency functions.</string>
+    <string name="mode_call_only">Call only</string>
+    <string name="mode_call_only_desc">Only calls and emergency functions stay available.</string>
+    <string name="mode_scheduled">Scheduled focus</string>
+    <string name="mode_scheduled_desc">Repeat a session on chosen days and times.</string>
+    <string name="mode_support_unsupported">Not supported on this device. Allow Shizuku under Settings, Permissions and managed device.</string>
+    <string name="mode_support_needs_access">Needs Do Not Disturb access first (Settings, Permissions and managed device).</string>
+    <string name="mode_support_limited">Limited: silences notifications except calls; apps can still be opened.</string>
+    <string name="confirm_note_suspend">While the session runs, the restricted apps cannot be opened and send no notifications.</string>
+    <string name="confirm_note_limited">Limited on this device: notifications are silenced except calls, but apps can still be opened.</string>
+    <string name="active_status_checking">Checking the restrictions. Nothing is shown as restricted until the device confirms it.</string>
+    <string name="active_restricted">Apps restricted</string>
+    <plurals name="apps_restricted_count">
+        <item quantity="one">%d app</item>
+        <item quantity="other">%d apps</item>
+    </plurals>
+    <plurals name="apps_not_restricted_count">
+        <item quantity="one">%d app could not be restricted by the system.</item>
+        <item quantity="other">%d apps could not be restricted by the system.</item>
+    </plurals>
+    <string name="active_notifications">Notifications</string>
+    <string name="active_notifications_silenced">Silenced except calls</string>
+    <string name="active_shizuku_stopped_note">Shizuku has stopped. Blocked apps stay blocked and this session keeps running. Start Shizuku again so fOCUS can check the blocks and end the session cleanly.</string>
+    <string name="active_uninstall_note">fOCUS could not block uninstalling itself on this device, so it can still be removed during this session.</string>
+    <string name="active_lock_task_note">Lock Task is on while fOCUS is open. Home, phone and emergency apps stay reachable.</string>
+    <string name="active_limited_note">Limited: apps can still be opened on this device.</string>
+    <string name="mode_enforcement_note">How strictly a mode is enforced depends on your device. Each mode is marked with what your device supports, and anything it cannot enforce is marked unsupported.</string>
+
+    <!-- Draft problems -->
+    <string name="problem_mode_missing">Choose a mode.</string>
+    <string name="problem_no_apps">Select at least one app.</string>
+    <string name="problem_duration_missing">Choose a duration.</string>
+    <string name="problem_duration_short">The duration is too short.</string>
+    <string name="problem_duration_long">The duration is too long.</string>
+    <string name="problem_no_days">Choose at least one day.</string>
+
+    <!-- App selection -->
+    <string name="apps_title">Choose apps</string>
+    <plurals name="apps_selected_count">
+        <item quantity="one">%d app selected</item>
+        <item quantity="other">%d apps selected</item>
+    </plurals>
+    <string name="apps_search">Search apps</string>
+    <string name="apps_loading">Loading apps…</string>
+    <string name="apps_failed">fOCUS could not read the list of installed apps. Nothing was changed.</string>
+    <string name="apps_retry">Try again</string>
+    <string name="apps_empty">No apps to choose from were found on this device.</string>
+    <string name="apps_no_match">No apps match your search.</string>
+    <string name="apps_save_failed">Your selection could not be saved. Check that the device has free storage.</string>
+    <string name="apps_clear">Clear</string>
+    <string name="apps_protected_heading">Can’t be restricted</string>
+    <string name="apps_protected_body">These apps are always available and cannot be selected. fOCUS never restricts itself, emergency calling and information, the phone, the home screen, settings or essential system components.</string>
+    <string name="apps_scope_note">The list shows apps with a launcher icon in this profile. Apps in a work or private profile are not listed. Your selection is stored only on this device.</string>
+    <string name="protection_this_app">fOCUS itself</string>
+    <string name="protection_launcher">Home screen. Needed to get back to your device.</string>
+    <string name="protection_phone">Phone. Needed for calls.</string>
+    <string name="protection_emergency">Emergency information and calling.</string>
+    <string name="protection_settings">System settings.</string>
+    <string name="protection_system">Essential system component.</string>
+
+    <!-- Duration -->
+    <string name="duration_title">How long?</string>
+    <string name="duration_presets">Presets</string>
+    <string name="duration_custom">Custom</string>
+    <string name="duration_hours">Hours</string>
+    <string name="duration_minutes">Minutes</string>
+    <string name="duration_min">%d min</string>
+    <string name="duration_h">%d h</string>
+    <string name="duration_h_min">%1$d h %2$d min</string>
+    <string name="duration_limits">Allowed: %1$s to %2$s.</string>
+    <string name="duration_invalid">Enter hours and minutes as numbers.</string>
+    <string name="duration_end_heading">Would end</string>
+    <string name="duration_end_note">If you started now. The exact end time is fixed when the session starts.</string>
+    <string name="end_today">Ends today at %1$s</string>
+    <string name="end_tomorrow">Ends tomorrow at %1$s</string>
+    <string name="end_on_date">Ends on %1$s at %2$s</string>
+
+    <!-- Schedule -->
+    <string name="schedule_title">Schedule</string>
+    <string name="schedule_days">Days</string>
+    <string name="schedule_start">Start time</string>
+
+    <!-- Confirmation -->
+    <string name="confirm_title">Review</string>
+    <string name="confirm_start">Start session</string>
+    <string name="confirm_save_schedule">Save schedule</string>
+    <string name="confirm_start_failed">The session could not start and nothing is restricted. %1$s</string>
+    <string name="check_running">Another session is already running.</string>
+    <string name="check_conflict">This overlaps a scheduled session (%1$s).</string>
+    <string name="unavail_engine">Starting a session is not available in this build yet. Nothing has been started or restricted.</string>
+    <string name="unavail_device">This device cannot enforce this mode, so it cannot be started. Allow Shizuku or set up a managed device under Settings, Permissions and managed device.</string>
+    <string name="unavail_permission">Do Not Disturb access is missing. Grant it under Settings, Permissions and managed device.</string>
+    <string name="unavail_policy">The system does not allow this restriction right now.</string>
+    <string name="unavail_storage">fOCUS could not read its saved schedules, so it cannot check for conflicts.</string>
+    <string name="confirm_mode">Mode</string>
+    <string name="confirm_apps">Apps</string>
+    <string name="confirm_duration">Duration</string>
+    <string name="confirm_schedule">Repeats</string>
+    <string name="confirm_window">%1$s to %2$s</string>
+    <string name="confirm_window_next_day">%1$s to %2$s (next day)</string>
+    <string name="confirm_ends">Ends</string>
+    <string name="confirm_end_note">Based on the current time. The exact end time is fixed when the session starts.</string>
+    <string name="confirm_status_heading">Before you start</string>
+    <string name="confirm_limits">fOCUS never blocks emergency calls, emergency information or system recovery. Whatever your device cannot enforce is shown as unsupported.</string>
+
+    <!-- Why sessions ended, and outcomes -->
+    <string name="end_reason_permission">A permission fOCUS needed was withdrawn.</string>
+    <string name="end_reason_policy">The system refused or removed the restriction.</string>
+    <string name="end_reason_unsupported">This device cannot enforce this mode.</string>
+    <string name="end_reason_enforcement_lost">The restriction stopped working.</string>
+    <string name="end_reason_recovery">Ended through recovery.</string>
+    <string name="end_reason_internal">fOCUS could not keep its own state.</string>
+    <string name="outcome_completed">Completed</string>
+    <string name="outcome_interrupted">Ended early</string>
+    <string name="outcome_failed">Did not start</string>
+
+    <!-- History -->
+    <string name="history_title">History</string>
+    <string name="history_empty">No sessions yet. Sessions you run will appear here.</string>
+    <string name="history_clear">Clear history</string>
+    <string name="history_detail_header">%1$s · %2$s</string>
+    <string name="history_detail">%1$s planned, %2$s restricted</string>
+    <string name="history_error">Your history could not be read.</string>
+    <string name="history_clear_failed">History could not be cleared. Try again.</string>
+    <string name="settings_activity">Activity</string>
+    <string name="settings_history_sub">Past sessions and why they ended</string>
+    <string name="settings_stats_sub">Time restricted, completed and ended-early sessions</string>
+
+    <!-- Statistics -->
+    <string name="stats_title">Statistics</string>
+    <string name="stats_empty">No statistics yet. They appear after your first session.</string>
+    <string name="stats_error">Your history could not be read, so no statistics can be shown.</string>
+    <string name="stats_total_heading">All time</string>
+    <string name="stats_total_time">Time restricted</string>
+    <string name="stats_days_heading">Last 7 days</string>
+    <string name="stats_weeks_heading">Last 8 weeks</string>
+    <string name="stats_today">Today</string>
+    <string name="stats_yesterday">Yesterday</string>
+    <string name="stats_this_week">This week</string>
+    <string name="stats_last_week">Last week</string>
+    <string name="stats_week_range">%1$s – %2$s</string>
+    <string name="stats_bar_row">%1$s: %2$s</string>
+    <string name="stats_note">Calculated on this device from your session history; nothing is stored or sent for it. Time counts from when a session started until its restrictions ended, split at midnight. Clearing the history also clears these numbers.</string>
+
+    <!-- Active session -->
+    <string name="active_title">Active session</string>
+    <string name="active_note">Emergency calling and system recovery stay available.</string>
+    <string name="active_recovery_note">A recovery was requested. Restrictions stay in place until it is completed.</string>
+
+    <!-- Settings, privacy, about -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_setup">Setup</string>
+    <string name="settings_guide_sub">Permissions and managed-device setup</string>
+    <string name="settings_intro">Introduction</string>
+    <string name="settings_intro_sub">Read again what fOCUS can and cannot do</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance_body">fOCUS follows your system light or dark setting.</string>
+    <string name="settings_privacy">Privacy</string>
+    <string name="settings_privacy_body">fOCUS works entirely on your device. It has no account, no internet permission and no analytics. Nothing is sent anywhere. The list of apps you select, your session history, the trusted person’s name (and optional phone number), a salted hash of their PIN and the recovery log are stored only on this device.\n\nStatistics are calculated on the device from that history and add nothing to what is stored. To delete everything it stores, clear its storage in Android settings or uninstall it.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_package">Package</string>
+    <string name="settings_about_body">fOCUS never promises an unbreakable lock. On a regular device it cannot prevent force-stop, uninstall, restart or safe mode.</string>
+
+    <!-- Phase 6: emergency access -->
+    <string name="home_emergency">Emergency</string>
+    <string name="emergency_title">Emergency</string>
+    <string name="emergency_intro">If you or someone else is in danger, call your local emergency number now.\n\nfOCUS never blocks emergency calling or emergency information. This screen needs no PIN, has no waiting time and is not recorded anywhere.</string>
+    <string name="emergency_open_dialer">Open emergency dialer</string>
+    <string name="emergency_dialer_note">This opens your phone app with 112 entered, a number most phones treat as an emergency number. You press call yourself. If your local emergency number is different, dial that one.</string>
+    <string name="emergency_info">Emergency information</string>
+    <string name="emergency_unavailable">This device has no app that can open that.</string>
+    <string name="emergency_session_label">Ending a session early</string>
+    <string name="emergency_session_body">Calling does not end the session, and it does not need to: the phone, home and settings apps stay available while it runs.\n\nIf the restrictions must be lifted, your trusted person can end the session with their PIN.</string>
+    <string name="emergency_open_recovery">End session with a trusted person</string>
+    <string name="emergency_privacy_note">fOCUS does not place calls itself and holds no call permission. Nothing about this screen is stored or sent.</string>
+    <string name="settings_safety">Safety</string>
+    <string name="settings_emergency_sub">Emergency calling and information</string>
+    <string name="settings_trusted_sub">Who can end a session early, and how</string>
+    <string name="settings_audit_sub">What happened, and when</string>
+
+    <!-- Phase 6: active session and review -->
+    <string name="active_emergency">Emergency</string>
+    <string name="active_end_with_trusted">End with trusted person</string>
+    <string name="active_no_trusted_note">No trusted person is set up, so this session ends only when its time is up. Emergency calling stays available.</string>
+    <string name="confirm_recovery_ready">%1$s can end this session early with their PIN. Emergency calling always stays available.</string>
+    <string name="confirm_recovery_none">No trusted person with a PIN is set up. Once started, this session can only end when its time is up. Emergency calling stays available.</string>
+    <string name="confirm_recovery_unreadable">fOCUS cannot read its trusted-person data right now. If you start, assume the session can only end when its time is up. Emergency calling stays available.</string>
+
+    <!-- Phase 6: trusted person -->
+    <string name="trusted_title">Trusted person</string>
+    <string name="trusted_explain_body">A trusted person is someone you choose, such as a family member or a friend, who can end a session early. fOCUS never contacts them: it has no internet permission and sends nothing anywhere.\n\nHow it works: you hand them the phone once, and they choose a secret PIN and type it in. Only a salted hash of the PIN is kept on this device, so fOCUS cannot show it to you. To end a session early, they must enter it on this phone. Each PIN works once; after it was used, they choose a new one.\n\nWhat it can do: end the running session and lift its restrictions. What it cannot do: it does not remove Device Owner status or the app, and it does not cancel scheduled sessions for later days. Emergency calling never needs it.\n\nWhile a session is running, nothing here can be changed. Too many wrong PINs lock the PIN entry for a growing time. If the PIN is forgotten, you can ask to remove the trusted person; that becomes possible 24 hours later, only when no session is running.</string>
+    <string name="trusted_setup_button">Set up a trusted person</string>
+    <string name="trusted_session_running">A session is running. Trusted-person settings cannot be changed until it ends.</string>
+    <string name="trusted_unreadable">fOCUS cannot read the trusted-person data on this device. Nothing was changed. Until it can be read, assume a session can only end when its time is up.</string>
+    <string name="trusted_row_name">Trusted person</string>
+    <string name="trusted_row_phone">Phone</string>
+    <string name="trusted_row_pin">Recovery PIN</string>
+    <string name="trusted_pin_set">Set</string>
+    <string name="trusted_pin_used">Used up</string>
+    <string name="trusted_pin_used_note">The PIN was used to end a session. A new PIN is needed before this person can end another one.</string>
+    <string name="trusted_new_pin">Set a new PIN</string>
+    <string name="trusted_change">Change details or PIN</string>
+    <string name="trusted_remove">Remove trusted person</string>
+    <string name="trusted_remove_body">Enter the current PIN to remove the trusted person. Afterwards, sessions can only end when their time is up.</string>
+    <string name="trusted_forgot">Forgot the PIN?</string>
+    <string name="trusted_forgot_body">You can ask to remove the trusted person without the PIN. It becomes possible 24 hours after the request, only while no session is running, and you can cancel the request. Nothing is hidden: the request is recorded in the recovery log.</string>
+    <string name="trusted_request_removal">Request removal</string>
+    <string name="trusted_removal_pending">Removal requested. You can remove the trusted person in %1$s.</string>
+    <string name="trusted_removal_ready">The waiting time is over. You can remove the trusted person now.</string>
+    <string name="trusted_complete_removal">Remove now</string>
+    <string name="trusted_cancel_removal">Cancel the request</string>
+    <string name="trusted_save">Save</string>
+    <string name="trusted_cancel">Cancel</string>
+    <string name="trusted_name_label">Name</string>
+    <string name="trusted_phone_label">Phone number (optional)</string>
+    <string name="trusted_phone_help">Only used for a Call button on the recovery screen. Stored on this device only.</string>
+    <string name="trusted_current_pin_label">Current PIN</string>
+    <string name="trusted_pin_section">Recovery PIN</string>
+    <string name="trusted_hand_over">Hand the phone to your trusted person now. They choose a PIN of 6 to 12 digits and type it twice. Please look away. The screen cannot be captured while this form is open.</string>
+    <string name="trusted_pin_label">New PIN</string>
+    <string name="trusted_new_pin_optional">New PIN (leave empty to keep the current one)</string>
+    <string name="trusted_pin_confirm_label">Repeat the PIN</string>
+    <string name="trusted_pin_mismatch">The two PINs are not the same.</string>
+    <string name="trusted_privacy_note">The name, the optional phone number and a salted hash of the PIN are stored only on this device.</string>
+
+    <!-- Phase 6: ending a session with the trusted person -->
+    <string name="recovery_title">End session early</string>
+    <string name="recovery_intro">Hand the phone to %1$s. Only their PIN can end this session early. Emergency calling does not need it.</string>
+    <string name="recovery_call">Call %1$s</string>
+    <string name="recovery_pin_label">Trusted person’s PIN</string>
+    <string name="recovery_end_button">End session</string>
+    <string name="recovery_cancel">Keep the session running</string>
+    <string name="recovery_checking">Checking…</string>
+    <string name="recovery_what_label">What this does</string>
+    <string name="recovery_what_body">It ends this session now and lifts its restrictions. The PIN is then used up and a new one has to be set before it can be used again.\n\nIt does not cancel scheduled sessions for later days and it does not remove Device Owner status. Wrong PINs are counted, and after three the entry is locked for a growing time.</string>
+    <string name="recovery_not_set_up">No trusted person with a PIN is set up, so this session cannot be ended early. It ends when its time is up. Emergency calling stays available.</string>
+    <string name="recovery_unreadable">fOCUS cannot read its recovery data right now, so it cannot check a PIN. The session ends when its time is up. Emergency calling stays available.</string>
+    <string name="recovery_no_session">There is no running session to end.</string>
+    <string name="recovery_storage_error">fOCUS could not store this attempt. Nothing was changed. Try again.</string>
+    <string name="recovery_locked">Too many wrong PINs. Try again in %1$s. Emergency calling is not affected.</string>
+    <plurals name="recovery_tries_left">
+        <item quantity="one">Wrong PIN. %d try left before a waiting time.</item>
+        <item quantity="other">Wrong PIN. %d tries left before a waiting time.</item>
+    </plurals>
+    <string name="result_session_running">Not possible while a session is running.</string>
+    <string name="result_not_configured">No trusted person with a PIN is set up.</string>
+    <string name="result_already_configured">A trusted person with a PIN already exists. Change it with the current PIN.</string>
+    <string name="result_waiting">Not yet. Try again in %1$s.</string>
+
+    <!-- Phase 6: input problems -->
+    <string name="problem_name_empty">Enter a name.</string>
+    <string name="problem_name_long">The name can have at most 40 characters.</string>
+    <string name="problem_phone">Enter a valid phone number or leave it empty.</string>
+    <string name="problem_pin_short">The PIN needs at least 6 digits.</string>
+    <string name="problem_pin_long">The PIN can have at most 12 digits.</string>
+    <string name="problem_pin_digits">Use digits only.</string>
+    <string name="problem_pin_simple">Choose a less obvious PIN: not one repeated digit and not a straight run like 123456.</string>
+
+    <!-- Phase 6: recovery log -->
+    <string name="audit_title">Recovery log</string>
+    <string name="audit_empty">Nothing recorded yet.</string>
+    <string name="audit_clear">Clear log</string>
+    <string name="audit_note">Stored only on this device. It records what happened and when, never a PIN. Emergency calls and the emergency screen are deliberately not recorded.</string>
+    <string name="audit_session_running">The log cannot be cleared while a session is running.</string>
+    <string name="audit_trusted_set">Trusted person set up</string>
+    <string name="audit_trusted_changed">Trusted-person details changed</string>
+    <string name="audit_pin_replaced">PIN replaced</string>
+    <string name="audit_trusted_removed">Trusted person removed</string>
+    <string name="audit_removal_requested">Removal requested without the PIN</string>
+    <string name="audit_removal_cancelled">Removal request cancelled</string>
+    <string name="audit_recovery_requested">Recovery opened for a session</string>
+    <string name="audit_recovery_cancelled">Recovery cancelled, session continued</string>
+    <string name="audit_recovery_succeeded">Session ended through recovery</string>
+    <string name="audit_recovery_failed">Wrong PIN during recovery</string>
+    <string name="audit_recovery_locked">PIN entry locked after wrong PINs</string>
+    <string name="audit_config_pin_failed">Wrong PIN while changing trusted-person settings</string>
+</resources>
