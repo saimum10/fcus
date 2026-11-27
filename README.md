@@ -143,6 +143,10 @@ fOCUS-debug-universal    fOCUS-release-universal
 
 Which one to install: `arm64-v8a` on almost all current phones, `armeabi-v7a` on old 32-bit phones, `x86`/`x86_64` on emulators, `universal` if unsure.
 
+### GitHub Releases
+
+After a successful build, the workflow attaches the APKs to a GitHub Release: a pushed tag `v*` (for example `v0.1.0`) makes a normal release, and every push to the default branch makes a pre-release named `build-<run number>`. Pull requests never publish. Find them under the repository's **Releases** page. If no release appears, check that the run was green (a failing unit test stops it before the release step) and that Settings, Actions, General, Workflow permissions does not block the job-level `contents: write`.
+
 ### Release signing secrets
 
 Debug APKs need no secrets. Release APKs are built and published only if **all four** repository secrets exist; otherwise only the 5 debug APKs are published, and an unsigned release APK is never published.

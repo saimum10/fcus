@@ -64,6 +64,7 @@ class AndroidDeviceControl(
             notificationControlAvailable = nm != null && policyAccessScreenExists(),
             notificationControlGranted = nm?.isNotificationPolicyAccessGranted == true,
             shizuku = shizukuState,
+            shizukuDetails = shizuku.details(),
         )
     }
 

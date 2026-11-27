@@ -41,3 +41,7 @@ Uninstall protection (after second device test: fOCUS could be uninstalled durin
 Stop-then-block: DeviceControl.forceStop (Shizuku: am force-stop --user 0) runs before suspend for exactly the apps being blocked; protected apps (fOCUS, Shizuku, home, phone, emergency, settings) never stopped. Tests added (order, sets). NOT run.
 
 Shizuku loss no longer ends a session (Applied.viaShizuku, status.shizukuStopped, note on active screen); cleanup of a dirty journal also runs on device changes when no session is active. Tests updated/added. NOT run.
+
+After third device test (Full focus failed at start: "system refused or removed the restriction"): cause not found by reading. Added real command timeouts (reader thread) and "Last Shizuku results" on the guide screen (ShizukuShell.details) to see which step fails. NOT run.
+
+CI: added a "Publish GitHub Release" step (job permission contents: write; tags v* and the default branch; pre-release build-<run number>). Not run.

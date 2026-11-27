@@ -131,6 +131,11 @@ fun PermissionGuideScreen(
             }
         }
 
+        if (!owner && caps.shizukuDetails.isNotEmpty()) {
+            SectionLabel(stringResource(R.string.guide_shizuku_details_heading))
+            NoteText(caps.shizukuDetails)
+        }
+
         Hairline()
         SectionLabel(stringResource(R.string.guide_permissions_heading))
         Paragraphs(stringResource(R.string.guide_permissions_body))

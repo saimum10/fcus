@@ -44,6 +44,8 @@ data class DeviceCapabilities(
     val notificationControlGranted: Boolean,
     /** Shizuku status. Does not change [level] by itself: only [ShizukuState.Granted] makes it Shizuku. */
     val shizuku: ShizukuState = ShizukuState.NotRunning,
+    /** What the last Shizuku steps really did, for the guide screen. Empty if none ran yet in this process. */
+    val shizukuDetails: String = "",
 )
 
 /** What a mode can do on a regular device when it is only partly enforceable. */

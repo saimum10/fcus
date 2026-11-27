@@ -3,7 +3,11 @@ package com.focus.app.device
 import android.content.pm.PackageManager
 import com.focus.app.domain.ShizukuState
 import java.io.IOException
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import rikka.shizuku.Shizuku
 
 /**
@@ -20,6 +24,18 @@ import rikka.shizuku.Shizuku
 internal class ShizukuShell {
     /** Packages this process has confirmed suspended, used when `dumpsys` output cannot be read. */
     private val confirmedSuspended = HashSet<String>()
+
+    /** The last few results, newest last, for the guide screen: what each Shizuku step really did. */
+    private val recent = ArrayDeque<String>()
+
+    fun details(): String = synchronized(recent) { recent.joinToString("\n") }
+
+    private fun note(text: String) {
+        synchronized(recent) {
+            recent.addLast(text.take(240))
+            while (recent.size > MAX_NOTES) recent.removeFirst()
+        }
+    }
 
     fun state(): ShizukuState = try {
         when {
@@ -50,7 +66,12 @@ internal class ShizukuShell {
         if (valid.isEmpty()) return invalid
         val verb = if (suspended) "suspend" else "unsuspend"
         val script = "for p in \"\$@\"; do pm $verb --user 0 \"\$p\" 2>&1; done"
-        val output = run(script, valid)
+        val output = try {
+            run(script, valid, SUSPEND_TIMEOUT_SECONDS)
+        } catch (e: Exception) {
+            note("$verb: ${e.javaClass.simpleName}: ${e.message}")
+            throw e
+        }
         val wanted = "new suspended state: $suspended"
         val confirmed = HashSet<String>()
         for (line in output.lineSequence()) {
@@ -61,6 +82,8 @@ internal class ShizukuShell {
         synchronized(confirmedSuspended) {
             if (suspended) confirmedSuspended += confirmed else confirmedSuspended -= valid.toSet()
         }
+        val sample = output.lineSequence().map { it.trim() }.firstOrNull { it.isNotEmpty() && !it.endsWith(wanted) }
+        note("$verb: ${confirmed.size} of ${valid.size} confirmed" + (sample?.let { "; other output: $it" } ?: ""))
         return invalid + valid.filterNot { it in confirmed }
     }
 
@@ -68,7 +91,14 @@ internal class ShizukuShell {
     fun forceStop(packages: Set<String>) {
         val valid = packages.filter { PACKAGE_NAME.matches(it) }
         if (valid.isEmpty()) return
-        run("for p in \"\$@\"; do am force-stop --user 0 \"\$p\" >/dev/null 2>&1; done", valid)
+        val started = System.currentTimeMillis()
+        try {
+            run("for p in \"\$@\"; do am force-stop --user 0 \"\$p\" >/dev/null 2>&1; done", valid, STOP_TIMEOUT_SECONDS)
+            note("stop: ${valid.size} apps in ${(System.currentTimeMillis() - started) / 1000}s")
+        } catch (e: Exception) {
+            note("stop: ${e.javaClass.simpleName}: ${e.message}")
+            throw e
+        }
     }
 
     /** The subset of [packages] that the system reports as suspended for the main user. */
@@ -78,7 +108,12 @@ internal class ShizukuShell {
         val script = "for p in \"\$@\"; do " +
             "o=\$(dumpsys package \"\$p\" 2>/dev/null | grep -o 'suspended=[a-z]*' | head -n 1); " +
             "echo \"\$p \${o:-unknown}\"; done"
-        val output = run(script, valid)
+        val output = try {
+            run(script, valid, VERIFY_TIMEOUT_SECONDS)
+        } catch (e: Exception) {
+            note("verify: ${e.javaClass.simpleName}: ${e.message}")
+            throw e
+        }
         val reported = HashMap<String, Boolean?>()
         for (line in output.lineSequence()) {
             val parts = line.trim().split(' ')
@@ -89,6 +124,10 @@ internal class ShizukuShell {
                 else -> null
             }
         }
+        note(
+            "verify: system says suspended ${reported.values.count { it == true }}, not ${reported.values.count { it == false }}, " +
+                "unreadable ${valid.size - reported.values.count { it != null }} of ${valid.size}",
+        )
         return synchronized(confirmedSuspended) {
             valid.filterTo(HashSet()) { pkg ->
                 when (reported[pkg]) {
@@ -112,23 +151,36 @@ internal class ShizukuShell {
         val script = "pm set-user-restriction --user 0 no_uninstall_apps $value >/dev/null 2>&1; echo \"exit=\$?\"; " +
             "pm set-user-restriction --user 0 no_control_apps $value >/dev/null 2>&1; " +
             "if dumpsys user 2>/dev/null | grep -q no_uninstall_apps; then echo present; else echo absent; fi"
-        val lines = run(script, emptyList()).lines().map { it.trim() }
+        val lines = try {
+            run(script, emptyList(), BLOCK_TIMEOUT_SECONDS).lines().map { it.trim() }
+        } catch (e: Exception) {
+            note("uninstall block: ${e.javaClass.simpleName}: ${e.message}")
+            throw e
+        }
         val succeeded = "exit=0" in lines
         val listed = "present" in lines
+        note("uninstall block ${if (blocked) "on" else "off"}: command ok=$succeeded, listed by system=$listed")
         return if (blocked) succeeded && listed else succeeded || !listed
     }
 
-    private fun run(script: String, args: List<String>): String {
+    private fun run(script: String, args: List<String>, timeoutSeconds: Long): String {
         check(state() == ShizukuState.Granted) { "Shizuku is not running or not allowed" }
         val command = arrayOf("sh", "-c", script, "sh") + args.toTypedArray()
         val process = newProcess(command)
+        // Reading blocks until the command ends, so it runs on its own thread and the wait has a real limit.
+        val reader = executor.submit(Callable { process.inputStream.bufferedReader().readText() })
         try {
-            val text = process.inputStream.bufferedReader().readText()
-            if (!process.waitFor(PROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                throw IOException("Shizuku command timed out")
+            val text = try {
+                reader.get(timeoutSeconds, TimeUnit.SECONDS)
+            } catch (_: TimeoutException) {
+                throw IOException("command timed out after ${timeoutSeconds}s")
+            } catch (e: ExecutionException) {
+                throw IOException("command failed: ${e.cause?.message}", e.cause)
             }
+            process.waitFor(5, TimeUnit.SECONDS)
             return text
         } finally {
+            reader.cancel(true)
             process.destroy()
         }
     }
@@ -154,7 +206,12 @@ internal class ShizukuShell {
 
     private companion object {
         const val REQUEST_CODE = 4711
-        const val PROCESS_TIMEOUT_SECONDS = 60L
+        const val MAX_NOTES = 6
+        const val STOP_TIMEOUT_SECONDS = 30L
+        const val SUSPEND_TIMEOUT_SECONDS = 120L
+        const val VERIFY_TIMEOUT_SECONDS = 60L
+        const val BLOCK_TIMEOUT_SECONDS = 30L
+        val executor = Executors.newCachedThreadPool { r -> Thread(r, "shizuku-shell").apply { isDaemon = true } }
         val PACKAGE_NAME = Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")
     }
 }
